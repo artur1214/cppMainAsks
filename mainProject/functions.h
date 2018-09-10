@@ -10,7 +10,7 @@ class Game{
     public:
         std::vector<int> newNumber(){
             std::vector<int> res;
-            srand(time(NULL));
+            srand(time(0));
             std::vector<int> nums;
             for(int i = 0; i< 10; i++){
                 nums.push_back(i);
