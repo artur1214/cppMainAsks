@@ -20,9 +20,11 @@ int main()
 {
 
     Game a;
-    for(int i = 0; i < 10; i ++){
+
+    for(int i = 0; i < 100; i ++){
         cout << printVector(a.newNumber()) << endl;
     }
+
 
     return 0;
 }
