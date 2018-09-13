@@ -21,10 +21,6 @@ int main()
 
     Game a;
 
-    for(int i = 0; i < 100; i ++){
-        cout << printVector(a.newNumber()) << endl;
-    }
-
 
     return 0;
 }
