@@ -1,17 +1,18 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QtWidgets>
+#include <QWidget>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QObject::connect(ui->openAction, SIGNAL(triggered(bool)), SLOT(open()) );
+    QObject::connect(ui->openAction, SIGNAL(triggered(bool)), SLOT(addFileToTab()));
     QObject::connect(ui->saveAction, SIGNAL(triggered(bool)), SLOT(save()) );
     QObject::connect(ui->exitAction, SIGNAL(triggered(bool)), SLOT(close()) );
-
+    this->setFixedSize(this->size());
     l = new QLabel(this);
-    ui->textSpace->setAcceptDrops(false);
+    ui->currTextEdit->setAcceptDrops(false);
 
     setAcceptDrops(true);
 }
@@ -32,12 +33,17 @@ void MainWindow::open() {
             return;
         }
         QTextStream in(&file);
-        ui->textSpace->setText(in.readAll());
+
+        QWidget *curWidget = ui->tabPanel->currentWidget();
+
+        QTextEdit *t = curWidget->findChild<QTextEdit*>("currTextEdit");
+        t->setText(in.readAll());
         file.close();
     }
 
     l->setText(fileName);
     ui->statusBar->addWidget(l);
+
 }
 
 
@@ -51,8 +57,9 @@ void MainWindow::save() {
 
         }
         else {
+
             QTextStream stream(&file);
-            stream << ui->textSpace->toPlainText();
+            stream << ui->tabPanel->currentWidget()->findChild<QTextEdit*>("currTextEdit")->toPlainText();
             stream.flush();
             file.close();
         }
@@ -91,10 +98,75 @@ void MainWindow::openDrop(QString fileName){
             return;
         }
         QTextStream in(&file);
-        ui->textSpace->setText(in.readAll());
+        QWidget *curWidget = ui->tabPanel->currentWidget();
+
+        QTextEdit *t = curWidget->findChild<QTextEdit*>("currTextEdit");
+        ui->tabPanel->setTabText(ui->tabPanel->currentIndex(), getFileName(fileName));
+        t->setText(in.readAll());
+
         file.close();
     }
 
     l->setText(fileName);
     ui->statusBar->addWidget(l);
+
+}
+
+
+void MainWindow::goToHtml(){
+    //ui->tabPanel->setCurrentIndex();
+}
+
+
+void MainWindow::addFileToTab(){
+
+    QString path = getPath();
+    QString filename = getFileName(path);
+    QString data = openNew(path);
+    QWidget *w;
+    w = new QWidget();
+    w->setObjectName("buff");
+    QTextEdit *txtEdit = new QTextEdit(w);
+    txtEdit->setGeometry(ui->currTextEdit->x(), ui->currTextEdit->y(), ui->currTextEdit->width(), ui->currTextEdit->height() );
+    txtEdit->setObjectName("currTextEdit");
+    //QString filename = open();
+    txtEdit->setText(data);
+    txtEdit->setAcceptDrops(false);
+
+    ui->tabPanel->addTab(w, filename);
+
+    ui->tabPanel->setCurrentIndex(ui->tabPanel->count() - 1);
+    ui->tabPanel->update();
+}
+
+
+QString MainWindow::getFileName(QString path){
+    int pos = path.lastIndexOf(QChar('/'));
+    QString res = path.right(pos + 1);
+    return res;
+}
+
+
+QString MainWindow::getPath(){
+    QString path = QFileDialog::getOpenFileName(this, tr("Открыть файл"));
+    return path;
+}
+
+QString MainWindow::openNew(QString path){
+    QString fileName = path;
+
+    if (fileName != "") {
+        QFile file(fileName);
+        if (!file.open(QIODevice::ReadOnly)) {
+            QMessageBox::critical(this, tr("Ошибка"), tr("Не могу открыть файл"));
+            return "";
+        }
+        QTextStream in(&file);
+        l->setText(fileName);
+        ui->statusBar->addWidget(l);
+        return in.readAll();
+        file.close();
+    }
+
+
 }
