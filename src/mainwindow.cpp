@@ -7,13 +7,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->saveAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
+    ui->openAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     QObject::connect(ui->openAction, SIGNAL(triggered(bool)), SLOT(addFileToTab()));
     QObject::connect(ui->saveAction, SIGNAL(triggered(bool)), SLOT(save()) );
     QObject::connect(ui->exitAction, SIGNAL(triggered(bool)), SLOT(close()) );
     this->setFixedSize(this->size());
     l = new QLabel(this);
     ui->currTextEdit->setAcceptDrops(false);
-
+    //ui->openAction->trigger();
     setAcceptDrops(true);
 }
 
@@ -39,10 +41,11 @@ void MainWindow::open() {
         QTextEdit *t = curWidget->findChild<QTextEdit*>("currTextEdit");
         t->setText(in.readAll());
         file.close();
+        l->setText(fileName);
+        ui->statusBar->addWidget(l);
     }
 
-    l->setText(fileName);
-    ui->statusBar->addWidget(l);
+
 
 }
 
@@ -105,16 +108,17 @@ void MainWindow::openDrop(QString fileName){
         t->setText(in.readAll());
 
         file.close();
+        l->setText(fileName);
+        ui->statusBar->addWidget(l);
     }
 
-    l->setText(fileName);
-    ui->statusBar->addWidget(l);
+
 
 }
 
 
 void MainWindow::goToHtml(){
-    //ui->tabPanel->setCurrentIndex();
+    //buffer = ui->tabPanel->currentWidget()->findChild<QTextEdit*>("currTextEdit")->getHtml
 }
 
 
@@ -123,6 +127,9 @@ void MainWindow::addFileToTab(){
     QString path = getPath();
     QString filename = getFileName(path);
     QString data = openNew(path);
+    if(data == NULL){
+        return;
+    }
     QWidget *w;
     w = new QWidget();
     w->setObjectName("buff");
@@ -167,6 +174,6 @@ QString MainWindow::openNew(QString path){
         return in.readAll();
         file.close();
     }
-
+    return NULL;
 
 }

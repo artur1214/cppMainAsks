@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>681</width>
-    <height>453</height>
+    <width>680</width>
+    <height>452</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
-      <string>Tab 1</string>
+      <string>Новый файл</string>
      </attribute>
      <widget class="QTextEdit" name="currTextEdit">
       <property name="geometry">
@@ -53,7 +53,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>681</width>
+     <width>680</width>
      <height>21</height>
     </rect>
    </property>

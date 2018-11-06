@@ -19,8 +19,9 @@ protected:
 void dragEnterEvent(QDragEnterEvent *event);
 
 void dropEvent(QDropEvent *event);
-private:
 
+private:
+    QString buffer;
     QLabel* l;
     Ui::MainWindow *ui;
     void openDrop(QString);
@@ -28,6 +29,7 @@ private:
     QString openNew(QString);
     QString getPath();
     QString getFileName(QString);
+
 private slots:
     void save();
     void open();
