@@ -28,7 +28,7 @@
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
-      <string>Новый файл</string>
+      <string>Tab 1</string>
      </attribute>
      <widget class="QTextEdit" name="currTextEdit">
       <property name="geometry">
@@ -65,6 +65,7 @@
     <addaction name="saveAction"/>
     <addaction name="separator"/>
     <addaction name="exitAction"/>
+    <addaction name="netAction"/>
    </widget>
    <addaction name="menu"/>
   </widget>
@@ -87,6 +88,11 @@
   <action name="saveAsAction">
    <property name="text">
     <string>Сохранить как...</string>
+   </property>
+  </action>
+  <action name="netAction">
+   <property name="text">
+    <string>Открыть онлайн файл</string>
    </property>
   </action>
  </widget>

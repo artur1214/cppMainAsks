@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include <QNetworkAccessManager>
 namespace Ui {
 class MainWindow;
 }
@@ -21,6 +22,7 @@ void dragEnterEvent(QDragEnterEvent *event);
 void dropEvent(QDropEvent *event);
 
 private:
+    QNetworkAccessManager *netManager;
     QString buffer;
     QLabel* l;
     Ui::MainWindow *ui;
@@ -31,6 +33,7 @@ private:
     QString getFileName(QString);
 
 private slots:
+    void openNet();
     void save();
     void open();
     void goToHtml();

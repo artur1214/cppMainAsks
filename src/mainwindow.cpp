@@ -2,18 +2,30 @@
 #include "ui_mainwindow.h"
 #include <QtWidgets>
 #include <QWidget>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QUrlQuery>
+#include <QUrl>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
+    this->netManager = new QNetworkAccessManager();
     ui->setupUi(this);
     ui->saveAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
     ui->openAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     QObject::connect(ui->openAction, SIGNAL(triggered(bool)), SLOT(addFileToTab()));
     QObject::connect(ui->saveAction, SIGNAL(triggered(bool)), SLOT(save()) );
     QObject::connect(ui->exitAction, SIGNAL(triggered(bool)), SLOT(close()) );
+    QObject::connect(ui->netAction, SIGNAL(triggered(bool)), SLOT(openNet()) );
     this->setFixedSize(this->size());
     l = new QLabel(this);
+    ui->statusBar->addWidget(l);
     ui->currTextEdit->setAcceptDrops(false);
     //ui->openAction->trigger();
     setAcceptDrops(true);
@@ -42,7 +54,7 @@ void MainWindow::open() {
         t->setText(in.readAll());
         file.close();
         l->setText(fileName);
-        ui->statusBar->addWidget(l);
+       // ui->statusBar->addWidget(l);
     }
 
 
@@ -109,7 +121,7 @@ void MainWindow::openDrop(QString fileName){
 
         file.close();
         l->setText(fileName);
-        ui->statusBar->addWidget(l);
+        //ui->statusBar->addWidget(l);
     }
 
 
@@ -170,10 +182,47 @@ QString MainWindow::openNew(QString path){
         }
         QTextStream in(&file);
         l->setText(fileName);
-        ui->statusBar->addWidget(l);
+        //ui->statusBar->addWidget(l);
         return in.readAll();
         file.close();
     }
     return NULL;
+
+}
+
+
+void MainWindow::openNet(){
+
+    QString url = "http";
+    QNetworkReply *data = this->netManager->get(QNetworkRequest(QUrl("http://avartur92.pythonanywhere.com")));
+
+    if(!data->error()){
+        QJsonDocument doc = QJsonDocument::fromJson(data->readAll());
+        QJsonObject root = doc.object();
+        if(doc.isObject()){
+            qDebug() << "пришел объект";
+        }
+        if(doc.isArray()){
+            qDebug() << "Пришел массив";
+        }
+        if(doc.isEmpty()){
+            qDebug() << "я дибил";
+        }
+
+        QWidget *w;
+        w = new QWidget();
+        w->setObjectName("buff");
+        QTextEdit *txtEdit = new QTextEdit(w);
+        txtEdit->setGeometry(ui->currTextEdit->x(), ui->currTextEdit->y(), ui->currTextEdit->width(), ui->currTextEdit->height() );
+        txtEdit->setObjectName("currTextEdit");
+        //QString filename = open();
+        //txtEdit->setText(root.value(root.keys().at(0)).toString());
+        txtEdit->setAcceptDrops(false);
+
+        ui->tabPanel->addTab(w, url);
+
+        ui->tabPanel->setCurrentIndex(ui->tabPanel->count() - 1);
+        ui->tabPanel->update();
+        }
 
 }
